@@ -54,3 +54,24 @@ print("===TRAIN===")
 print(train.isnull().sum())
 print("\n===TEST===")
 print(test.isnull().sum())
+
+#encodage sex par deux valeur normal binaire
+train["Sex"]=train["Sex"].map({"male":1,"female":0})
+test["Sex"]=test["Sex"].map({"male":1,"female":0})
+
+#one-short enconding rpour embarker
+train = pd.get_dummies(train, columns=['Embarked'], dtype=int)
+test = pd.get_dummies(test, columns=['Embarked'], dtype=int)
+
+#verification
+print("\n===COLONNES APRES ENCODAGE====")
+print("train",train.columns.tolist())
+print("test",test.columns.tolist())
+print("\ntrain head:")
+print(train.head())
+print("\ntest head:")
+print(test.head())
+
+print("\n===VERIFIONS LA CORRELATION===")
+print(train.corr(numeric_only=True)['Survived'].sort_values(ascending=False))
+
