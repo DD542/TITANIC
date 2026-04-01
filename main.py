@@ -125,3 +125,21 @@ print("\nRapport complet :")
 print(classification_report(Y_val,Y_pred))
 print("\nmatrice de confusion:")
 print(confusion_matrix(Y_val,Y_pred))
+
+# prediction sur le vrai Kaggle
+test_sans_id = test.drop(columns=["PassengerId"])
+predictions =model.predict(test_sans_id)
+
+#generation du fichier submission.csv
+submission = pd.DataFrame({
+    "PassengerId": test["PassengerId"],
+    "Survived":predictions
+})
+
+submission.to_csv("data/submission.csv", index=False)
+
+
+print("\n === submission .cs gene")
+print(submission.head(10))
+print("nombre de prediction :", len (submission))
+print("fichier sauvegarde dans dat/submission.csv")
