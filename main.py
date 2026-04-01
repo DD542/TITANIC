@@ -1,3 +1,9 @@
+from sklearn.model_selection import train_test_split
+
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
 import pandas as pd
 
 #nous sert a charge directement nos donne de mon ficher data
@@ -56,8 +62,8 @@ print("\n===TEST===")
 print(test.isnull().sum())
 
 #encodage sex par deux valeur normal binaire
-train["Sex"]=train["Sex"].map({"male":1,"female":0})
-test["Sex"]=test["Sex"].map({"male":1,"female":0})
+train["Sex"]=train["Sex"].map({"male":0,"female":1})
+test["Sex"]=test["Sex"].map({"male":0,"female":1})
 
 #one-short enconding rpour embarker
 train = pd.get_dummies(train, columns=['Embarked'], dtype=int)
@@ -75,3 +81,47 @@ print(test.head())
 print("\n===VERIFIONS LA CORRELATION===")
 print(train.corr(numeric_only=True)['Survived'].sort_values(ascending=False))
 
+#pour supprime les colonnnes qui me sont inutile
+train= train.drop(columns=["PassengerId","Name","Ticket"])
+test= test.drop(columns=["Name","Ticket"])
+
+print("\n=== COLONNES FINALES ===")
+print("Train :", train.columns.tolist())
+print("Test :", test.columns.tolist())
+print("\nDimensions train :", train.shape)
+print("Dimensions test :", test.shape)
+
+#separation features/cibles
+X=train.drop(columns=["Survived"])
+Y=train["Survived"]
+
+#split 80/20
+X_train, X_val, Y_train, Y_val= train_test_split(
+    X,Y, test_size=0.2, random_state=42
+)
+
+
+# resultat apres split
+print("\n === split === 80 / 20 ==== ")
+print("X_train",X_train.shape)
+print("X_val:",X_val.shape)
+print("Y_train:",Y_train.shape)
+print("Y_val:",Y_val.shape)
+
+#creaction du model et entrainement du modele
+model = LogisticRegression(max_iter=1000, random_state=42)
+model.fit(X_train, Y_train)
+
+print("\n== modelle entrainne ===")
+print("model est pret")
+
+#prediction sur X_val
+Y_pred=model.predict(X_val)
+
+#Evaluation
+print("\n==EVALUATION DU MODELLE===")
+print("ACCUARY :", accuracy_score (Y_val,Y_pred))
+print("\nRapport complet :")
+print(classification_report(Y_val,Y_pred))
+print("\nmatrice de confusion:")
+print(confusion_matrix(Y_val,Y_pred))
